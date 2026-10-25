@@ -1,0 +1,18 @@
+# NetBeans build files
+/build/
+/dist/
+
+# NetBeans private settings
+/nbproject/private/
+
+# Java compiled files
+*.class
+
+# Temporary files
+*.log
+*.tmp
+*.bak
+
+# Environment and secrets
+.env
+.env.*
