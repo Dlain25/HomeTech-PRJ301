@@ -66,6 +66,31 @@
 </head>
 <body>
 
+<div style="display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-bottom:25px;">
+
+    <a href="${pageContext.request.contextPath}/admin/dashboard"
+       style="background:#173b66;
+              color:white;
+              padding:11px 18px;
+              border-radius:7px;
+              text-decoration:none;">
+        Dashboard
+    </a>
+
+    <a href="${pageContext.request.contextPath}/home"
+       style="background:#16804d;
+              color:white;
+              padding:11px 18px;
+              border-radius:7px;
+              text-decoration:none;">
+        Trang chủ HomeTech
+    </a>
+
+</div>
+
 <h1>HomeTech - User Management</h1>
 
 <div class="search-box">

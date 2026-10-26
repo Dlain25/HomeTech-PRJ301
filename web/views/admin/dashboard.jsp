@@ -17,10 +17,13 @@
 
     private String money(BigDecimal amount) {
         if (amount == null) amount = BigDecimal.ZERO;
+
         NumberFormat format =
                 NumberFormat.getNumberInstance(
                         Locale.forLanguageTag("vi-VN"));
+
         format.setMaximumFractionDigits(0);
+
         return format.format(amount) + " đ";
     }
 %>
@@ -28,10 +31,13 @@
 <%
     Integer totalProducts =
             (Integer) request.getAttribute("totalProducts");
+
     Integer totalUsers =
             (Integer) request.getAttribute("totalUsers");
+
     Integer totalOrders =
             (Integer) request.getAttribute("totalOrders");
+
     BigDecimal totalRevenue =
             (BigDecimal) request.getAttribute("totalRevenue");
 
@@ -46,13 +52,19 @@
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
     <title>HomeTech - Admin Dashboard</title>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -67,19 +79,36 @@
             padding: 22px 35px;
         }
 
-        .header h1 { margin: 0 0 8px; }
+        .header h1 {
+            margin: 0 0 8px;
+        }
 
         .nav {
             background: white;
             padding: 15px 35px;
             border-bottom: 1px solid #ddd;
+
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
         }
 
         .nav a {
-            margin-right: 25px;
             color: #173b66;
             text-decoration: none;
             font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover {
+            color: #1769aa;
+        }
+
+        .nav a.active {
+            color: #1769aa;
+            border-bottom: 2px solid #1769aa;
+            padding-bottom: 5px;
         }
 
         .container {
@@ -157,75 +186,137 @@
 
 <body>
 
+<!-- ADMIN HEADER -->
+
 <header class="header">
+
     <h1>HomeTech Admin Dashboard</h1>
-    <div>Thống kê hoạt động kinh doanh</div>
+
+    <div>
+        Thống kê hoạt động kinh doanh
+    </div>
+
 </header>
 
+<!-- ADMIN NAVIGATION -->
+
 <nav class="nav">
-    <a href="<%= path %>/admin/dashboard">Dashboard</a>
-    <a href="<%= path %>/admin/categories">Categories</a>
-    <a href="<%= path %>/admin/users">Users</a>
+
+    <a href="<%= path %>/admin/dashboard"
+       class="active">
+        Dashboard
+    </a>
+
+    <a href="<%= path %>/admin/categories">
+        Categories
+    </a>
+
+    <!-- NEW: PRODUCT MANAGEMENT -->
+    <a href="<%= path %>/admin/products">
+        Products
+    </a>
+
+    <a href="<%= path %>/admin/users">
+        Users
+    </a>
+
+    <a href="<%= path %>/home">
+        Trang chủ
+    </a>
+
 </nav>
 
+<!-- DASHBOARD CONTENT -->
+
 <main class="container">
+
+    <!-- STATISTICS -->
 
     <div class="stats">
 
         <div class="stat-card">
+
             <h3>Tổng sản phẩm</h3>
+
             <div class="value">
                 <%= totalProducts == null ? 0 : totalProducts %>
             </div>
+
         </div>
 
         <div class="stat-card">
+
             <h3>Tổng người dùng</h3>
+
             <div class="value">
                 <%= totalUsers == null ? 0 : totalUsers %>
             </div>
+
         </div>
 
         <div class="stat-card">
+
             <h3>Tổng đơn hàng</h3>
+
             <div class="value">
                 <%= totalOrders == null ? 0 : totalOrders %>
             </div>
+
         </div>
 
         <div class="stat-card">
+
             <h3>Tổng doanh thu</h3>
+
             <div class="value">
                 <%= money(totalRevenue) %>
             </div>
+
         </div>
 
     </div>
 
+    <!-- MONTHLY REVENUE -->
+
     <section class="section">
+
         <h2>Doanh thu theo tháng</h2>
 
         <div class="table-wrap">
+
             <table>
+
                 <thead>
                     <tr>
                         <th>Tháng</th>
                         <th>Doanh thu</th>
                     </tr>
                 </thead>
+
                 <tbody>
 
-                <% if (monthlyRevenue != null
-                        && !monthlyRevenue.isEmpty()) {
-                    for (Object[] row : monthlyRevenue) { %>
+                <%
+                    if (monthlyRevenue != null
+                            && !monthlyRevenue.isEmpty()) {
+
+                        for (Object[] row : monthlyRevenue) {
+                %>
 
                     <tr>
-                        <td>Tháng <%= row[0] %></td>
-                        <td><%= money((BigDecimal) row[1]) %></td>
+                        <td>
+                            Tháng <%= row[0] %>
+                        </td>
+
+                        <td>
+                            <%= money((BigDecimal) row[1]) %>
+                        </td>
                     </tr>
 
-                <%  }
-                   } else { %>
+                <%
+                        }
+
+                    } else {
+                %>
 
                     <tr>
                         <td colspan="2" class="empty">
@@ -233,18 +324,28 @@
                         </td>
                     </tr>
 
-                <% } %>
+                <%
+                    }
+                %>
 
                 </tbody>
+
             </table>
+
         </div>
+
     </section>
 
+    <!-- TOP SELLING PRODUCTS -->
+
     <section class="section">
+
         <h2>Top 5 sản phẩm bán chạy</h2>
 
         <div class="table-wrap">
+
             <table>
+
                 <thead>
                     <tr>
                         <th>Sản phẩm</th>
@@ -252,20 +353,37 @@
                         <th>Doanh thu</th>
                     </tr>
                 </thead>
+
                 <tbody>
 
-                <% if (topSellingProducts != null
-                        && !topSellingProducts.isEmpty()) {
-                    for (Object[] row : topSellingProducts) { %>
+                <%
+                    if (topSellingProducts != null
+                            && !topSellingProducts.isEmpty()) {
+
+                        for (Object[] row : topSellingProducts) {
+                %>
 
                     <tr>
-                        <td><%= esc((String) row[0]) %></td>
-                        <td><%= row[1] %></td>
-                        <td><%= money((BigDecimal) row[2]) %></td>
+
+                        <td>
+                            <%= esc((String) row[0]) %>
+                        </td>
+
+                        <td>
+                            <%= row[1] %>
+                        </td>
+
+                        <td>
+                            <%= money((BigDecimal) row[2]) %>
+                        </td>
+
                     </tr>
 
-                <%  }
-                   } else { %>
+                <%
+                        }
+
+                    } else {
+                %>
 
                     <tr>
                         <td colspan="3" class="empty">
@@ -273,13 +391,19 @@
                         </td>
                     </tr>
 
-                <% } %>
+                <%
+                    }
+                %>
 
                 </tbody>
+
             </table>
+
         </div>
+
     </section>
 
 </main>
+
 </body>
 </html>

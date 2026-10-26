@@ -10,6 +10,7 @@ public class User {
     private String roleName;
     private String username;
     private String email;
+    private String passwordHash;
     private String fullName;
     private String phone;
     private String status;
@@ -19,6 +20,7 @@ public class User {
     public User() {
     }
 
+    // Constructor cu: giu tuong thich voi Admin
     public User(int userId, int roleId, String roleName,
                 String username, String email, String fullName,
                 String phone, String status,
@@ -33,6 +35,32 @@ public class User {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    // Constructor moi: tuong thich voi Member 2
+    public User(int userId, int roleId, String roleName,
+                String username, String email, String passwordHash,
+                String fullName, String phone, String status,
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.userId = userId;
+        this.roleId = roleId;
+        this.roleName = roleName;
+        this.username = username;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isAdmin() {
+        return "ADMIN".equalsIgnoreCase(roleName);
+    }
+
+    public boolean isLocked() {
+        return "LOCKED".equalsIgnoreCase(status);
     }
 
     public int getUserId() {
@@ -73,6 +101,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getFullName() {

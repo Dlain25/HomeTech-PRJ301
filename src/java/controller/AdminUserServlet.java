@@ -78,7 +78,7 @@ public class AdminUserServlet extends HttpServlet {
             request.setAttribute("users", users);
             request.setAttribute("keyword", keyword);
 
-            request.getRequestDispatcher("/views/admin/users.jsp")
+            request.getRequestDispatcher("/views/admin/user.jsp")
                    .forward(request, response);
 
         } catch (SQLException e) {

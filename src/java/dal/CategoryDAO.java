@@ -1,3 +1,4 @@
+
 package dal;
 
 import java.sql.*;
@@ -7,6 +8,9 @@ import model.Category;
 
 public class CategoryDAO {
 
+    // =========================
+    // ADMIN: Lay tat ca danh muc
+    // =========================
     public List<Category> getAll() throws SQLException {
         List<Category> list = new ArrayList<>();
 
@@ -29,6 +33,40 @@ public class CategoryDAO {
         return list;
     }
 
+    // =========================
+    // FRONTEND: Lay danh muc ACTIVE
+    // =========================
+    public List<Category> findActive() throws SQLException {
+        List<Category> list = new ArrayList<>();
+
+        String sql = "SELECT category_id, category_name, description, is_active "
+                   + "FROM Categories "
+                   + "WHERE is_active = 1 "
+                   + "ORDER BY category_name";
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setQueryTimeout(10);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Category(
+                        rs.getInt("category_id"),
+                        rs.getString("category_name"),
+                        rs.getString("description"),
+                        rs.getBoolean("is_active")
+                    ));
+                }
+            }
+        }
+
+        return list;
+    }
+
+    // =========================
+    // ADMIN: Tim danh muc theo ID
+    // =========================
     public Category getById(int id) throws SQLException {
         String sql = "SELECT category_id, category_name, description, is_active "
                    + "FROM Categories WHERE category_id = ?";
@@ -52,6 +90,9 @@ public class CategoryDAO {
         return null;
     }
 
+    // =========================
+    // ADMIN: Them danh muc
+    // =========================
     public void insert(Category c) throws SQLException {
         String sql = "INSERT INTO Categories "
                    + "(category_name, description, is_active) VALUES (?, ?, ?)";
@@ -66,6 +107,9 @@ public class CategoryDAO {
         }
     }
 
+    // =========================
+    // ADMIN: Cap nhat danh muc
+    // =========================
     public void update(Category c) throws SQLException {
         String sql = "UPDATE Categories SET category_name = ?, "
                    + "description = ?, is_active = ? WHERE category_id = ?";
@@ -81,6 +125,9 @@ public class CategoryDAO {
         }
     }
 
+    // =========================
+    // ADMIN: Xoa danh muc
+    // =========================
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM Categories WHERE category_id = ?";
 

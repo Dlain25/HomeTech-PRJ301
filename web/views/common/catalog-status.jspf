@@ -1,0 +1,9 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:if test="${catalogUnavailable}">
+    <section class="empty-state my-4" role="status">
+        <span class="eyebrow">HOMETECH</span><h2>Danh mục tạm thời chưa sẵn sàng</h2>
+        <p>Chưa thể tải dữ liệu sản phẩm. Bạn vui lòng quay lại sau.</p>
+        <a class="btn btn-primary" href="<c:url value='/home'/>">Về trang chủ</a>
+    </section>
+</c:if>
+

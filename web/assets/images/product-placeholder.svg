@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="320" viewBox="0 0 420 320">
+    <rect width="420" height="320" rx="20" fill="#f5f8fc"/>
+    <circle cx="210" cy="140" r="80" fill="#eaf0f8"/>
+    <path d="M160 127l50-38 50 38v69H160z" fill="#d4e1f2"/>
+    <path d="M184 178v-46h10v17h31v-17h10v46h-10v-19h-31v19z" fill="#7d9fc8"/>
+    <circle cx="239" cy="176" r="6" fill="#f7a06d"/>
+    <text x="210" y="248" text-anchor="middle" fill="#6b83a1" font-family="Segoe UI,Arial,sans-serif" font-size="15">HomeTech</text>
+    <text x="210" y="272" text-anchor="middle" fill="#7e90a7" font-family="Segoe UI,Arial,sans-serif" font-size="12">H&#236;nh &#7843;nh &#273;ang c&#7853;p nh&#7853;t</text>
+</svg>
