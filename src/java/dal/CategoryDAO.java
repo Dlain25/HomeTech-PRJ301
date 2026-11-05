@@ -7,17 +7,19 @@ import java.util.List;
 import model.Category;
 
 public class CategoryDAO {
+    private final PublicConnectionProvider connections;
+    public CategoryDAO() { this(DBContext::getConnection); }
+    public CategoryDAO(PublicConnectionProvider connections) { this.connections = connections; }
 
-    // =========================
+
     // ADMIN: Lay tat ca danh muc
-    // =========================
     public List<Category> getAll() throws SQLException {
         List<Category> list = new ArrayList<>();
 
         String sql = "SELECT category_id, category_name, description, is_active "
                    + "FROM Categories ORDER BY category_id DESC";
 
-        try (Connection con = DBContext.getConnection();
+        try (Connection con = connections.open();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -33,9 +35,7 @@ public class CategoryDAO {
         return list;
     }
 
-    // =========================
     // FRONTEND: Lay danh muc ACTIVE
-    // =========================
     public List<Category> findActive() throws SQLException {
         List<Category> list = new ArrayList<>();
 
@@ -44,7 +44,7 @@ public class CategoryDAO {
                    + "WHERE is_active = 1 "
                    + "ORDER BY category_name";
 
-        try (Connection con = DBContext.getConnection();
+        try (Connection con = connections.open();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setQueryTimeout(10);
@@ -64,14 +64,12 @@ public class CategoryDAO {
         return list;
     }
 
-    // =========================
     // ADMIN: Tim danh muc theo ID
-    // =========================
     public Category getById(int id) throws SQLException {
         String sql = "SELECT category_id, category_name, description, is_active "
                    + "FROM Categories WHERE category_id = ?";
 
-        try (Connection con = DBContext.getConnection();
+        try (Connection con = connections.open();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
@@ -90,14 +88,12 @@ public class CategoryDAO {
         return null;
     }
 
-    // =========================
     // ADMIN: Them danh muc
-    // =========================
     public void insert(Category c) throws SQLException {
         String sql = "INSERT INTO Categories "
                    + "(category_name, description, is_active) VALUES (?, ?, ?)";
 
-        try (Connection con = DBContext.getConnection();
+        try (Connection con = connections.open();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, c.getCategoryName());
@@ -107,14 +103,12 @@ public class CategoryDAO {
         }
     }
 
-    // =========================
     // ADMIN: Cap nhat danh muc
-    // =========================
     public void update(Category c) throws SQLException {
         String sql = "UPDATE Categories SET category_name = ?, "
                    + "description = ?, is_active = ? WHERE category_id = ?";
 
-        try (Connection con = DBContext.getConnection();
+        try (Connection con = connections.open();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, c.getCategoryName());
@@ -125,13 +119,11 @@ public class CategoryDAO {
         }
     }
 
-    // =========================
     // ADMIN: Xoa danh muc
-    // =========================
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM Categories WHERE category_id = ?";
 
-        try (Connection con = DBContext.getConnection();
+        try (Connection con = connections.open();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);

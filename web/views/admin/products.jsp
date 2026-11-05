@@ -1,5 +1,5 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
@@ -359,14 +359,14 @@
                 <div class="field">
                     <label>Tên sản phẩm *</label>
                     <input type="text" name="productName"
-                           maxlength="255" required
+                           maxlength="200" required
                            placeholder="Ví dụ: Máy giặt Samsung">
                 </div>
 
                 <div class="field">
                     <label>SKU sản phẩm *</label>
                     <input type="text" name="sku"
-                           maxlength="100" required
+                           maxlength="60" required
                            placeholder="Ví dụ: MG-SAMSUNG-01">
                 </div>
 

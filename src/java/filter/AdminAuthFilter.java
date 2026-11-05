@@ -79,6 +79,8 @@ public class AdminAuthFilter implements Filter {
             }
 
             // Có quyền Admin: cho phép truy cập
+            currentUser.setPasswordHash(null);
+            session.setAttribute("user", currentUser);
             chain.doFilter(request, response);
 
         } catch (SQLException e) {

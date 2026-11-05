@@ -262,6 +262,18 @@ public class AdminProductServlet extends HttpServlet {
             );
         }
 
+        int limit = switch (name) {
+            case "sku" -> 60;
+            case "productName" -> 200;
+            case "variantSku" -> 80;
+            case "variantName" -> 120;
+            case "imageUrl" -> 500;
+            default -> Integer.MAX_VALUE;
+        };
+        if (result.length() > limit) {
+            throw new IllegalArgumentException(name + " tối đa " + limit + " ký tự");
+        }
+
         return result;
     }
 
@@ -286,6 +298,9 @@ public class AdminProductServlet extends HttpServlet {
             throw new IllegalArgumentException(
                     name + " không được âm"
             );
+        }
+        if ("warrantyMonths".equals(name) && number > Short.MAX_VALUE) {
+            throw new IllegalArgumentException("Thời gian bảo hành vượt giới hạn cho phép");
         }
 
         return number;

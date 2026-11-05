@@ -1,5 +1,5 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
@@ -176,11 +176,11 @@
                             <td>
                                 <div class="product">
                                     <c:if test="${not empty item.imageUrl}">
-                                        <img src="${pageContext.request.contextPath}/${item.imageUrl}"
+                                        <img src="<c:out value='${item.imageUrl}'/>"
                                              alt="Sản phẩm">
                                     </c:if>
                                     <div>
-                                        <strong><c:out value="${item.productName}"/></strong>
+                                        <a href="<c:url value='/product'><c:param name='id' value='${item.productId}'/></c:url>"><strong><c:out value="${item.productName}"/></strong></a>
                                         <p><c:out value="${item.variantName}"/></p>
                                         <small><c:out value="${item.color}"/></small>
                                     </div>

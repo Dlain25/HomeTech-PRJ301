@@ -1,0 +1,73 @@
+/* Scoped to the homepage's first slide; no shared layout or form styles. */
+.hero-panel.hero-showcase {
+    grid-template-columns: 52% 48%;
+    min-height: 400px;
+    background: #eaf3fc;
+    border-radius: 22px;
+    text-align: left;
+    isolation: isolate;
+}
+.hero-showcase .hero-copy {
+    padding: 48px 0 48px 48px;
+    z-index: 2;
+}
+.hero-showcase .eyebrow {
+    color: #1662da;
+    font-size: .69rem;
+    letter-spacing: .1em;
+    margin-bottom: 20px;
+}
+.hero-showcase h1 {
+    color: #14304b;
+    font-size: clamp(2.5rem, 4.4vw, 3.75rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -.045em;
+    margin-bottom: 24px;
+}
+.hero-showcase h1 span { color: #1963da; }
+.hero-showcase .hero-copy p {
+    color: #6c8195;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 27px;
+}
+.hero-showcase .ht-button {
+    background: #ff7b29;
+    border-color: #ff7b29;
+    color: #14304b;
+    padding: 14px 25px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 750;
+}
+.hero-showcase .ht-button:hover { background: #ed681c; border-color: #ed681c; }
+.hero-showcase .ht-button span { margin-left: 7px; }
+.hero-showcase-art { position: relative; align-self: stretch; min-width: 0; overflow: hidden; }
+.hero-showcase-art svg { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
+.hero-showcase-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #eaf3fc, transparent 24%);
+    pointer-events: none;
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    .hero-panel.hero-showcase { grid-template-columns: 55% 45%; min-height: 360px; }
+    .hero-showcase .hero-copy { padding: 32px 0 32px 28px; }
+    .hero-showcase .eyebrow { font-size: .58rem; letter-spacing: .07em; }
+    .hero-showcase h1 { font-size: 2.65rem; }
+    .hero-showcase .hero-copy p { font-size: .88rem; }
+    .hero-desktop-break { display: none; }
+}
+@media (max-width: 767px) {
+    .hero-panel.hero-showcase { grid-template-columns: 1fr; min-height: 0; }
+    .hero-showcase .hero-copy { padding: 32px 26px 18px; }
+    .hero-showcase .eyebrow { font-size: .6rem; line-height: 1.7; margin-bottom: 16px; }
+    .hero-showcase h1 { font-size: clamp(2.1rem, 9.5vw, 3.2rem); margin-bottom: 18px; }
+    .hero-showcase .hero-copy p { font-size: .9rem; margin-bottom: 22px; }
+    .hero-showcase .ht-button { font-size: .95rem; padding: 12px 22px; }
+    .hero-showcase-art { height: clamp(210px, 60vw, 330px); }
+    .hero-showcase-art::after { background: linear-gradient(#eaf3fc, transparent 24%); }
+    .hero-desktop-break { display: none; }
+}

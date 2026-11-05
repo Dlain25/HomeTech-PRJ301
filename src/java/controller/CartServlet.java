@@ -25,7 +25,6 @@ public class CartServlet extends HttpServlet {
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -54,6 +53,7 @@ public class CartServlet extends HttpServlet {
 }
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem it : items) {
+            it.setImageUrl(PublicView.imageUrl(request.getContextPath(), it.getImageUrl()));
             total = total.add(it.getLineTotal());
         }
         request.setAttribute("items", items);
@@ -143,6 +143,6 @@ protected void doPost(HttpServletRequest request,
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

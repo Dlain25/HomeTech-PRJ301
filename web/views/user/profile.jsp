@@ -1,5 +1,5 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
@@ -177,7 +177,7 @@
                    id="fullName"
                    name="fullName"
                    value="<c:out value='${fullName}'/>"
-                   maxlength="255"
+                   maxlength="120"
                    required>
 
             <div class="error">
@@ -189,7 +189,7 @@
                    id="email"
                    name="email"
                    value="<c:out value='${email}'/>"
-                   maxlength="255"
+                   maxlength="254"
                    required>
 
             <div class="error">

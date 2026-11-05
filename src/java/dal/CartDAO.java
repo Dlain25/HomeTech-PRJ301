@@ -90,7 +90,7 @@ public CartDAO() throws SQLException {
                     }
                 }
             }
-            if (current + quantity > stock) {
+            if ((long) current + quantity > stock) {
                 if (stock == 0) {
                     return "Sản phẩm đã hết hàng";
                 }
@@ -122,6 +122,9 @@ public CartDAO() throws SQLException {
     }
 
     public String updateQuantity(int userId, int cartItemId, int quantity) {
+        if (quantity < 0 || cartItemId <= 0) {
+            return "Số lượng hoặc sản phẩm không hợp lệ";
+        }
         if (quantity < 1) {
             return removeItem(userId, cartItemId) ? null : "Không tìm thấy sản phẩm trong giỏ";
         }

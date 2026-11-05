@@ -27,7 +27,6 @@ public class ProfileServlet extends HttpServlet {
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -87,6 +86,10 @@ public class ProfileServlet extends HttpServlet {
             if (errors.isEmpty()) {
                 if (dao.updateProfile(sessionUser.getUserId(), fullName, email, phone)) {
                     User fresh = dao.findById(sessionUser.getUserId());
+                    if (fresh == null) {
+                        response.sendError(503, "Cannot reload profile");
+                        return;
+                    }
                     fresh.setPasswordHash(null);
                     request.getSession().setAttribute("user", fresh);
                     request.getSession().setAttribute("flashSuccess", "Cập nhật thông tin thành công");
@@ -120,6 +123,6 @@ public class ProfileServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

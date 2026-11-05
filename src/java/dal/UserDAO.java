@@ -43,7 +43,6 @@ public class UserDAO implements AutoCloseable {
         return u;
     }
 
-    // ================= ADMIN =================
 
     public List<User> getAll() throws SQLException {
         List<User> list = new ArrayList<>();
@@ -151,7 +150,6 @@ public class UserDAO implements AutoCloseable {
         }
     }
 
-    // ================= MEMBER 2 =================
 
     public User findById(int userId) {
         try {

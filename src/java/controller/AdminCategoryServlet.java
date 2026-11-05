@@ -48,7 +48,8 @@ public class AdminCategoryServlet extends HttpServlet {
                 boolean active = "true".equals(request.getParameter("active"));
 
                 if (name == null || name.trim().isEmpty()
-                        || name.length() > 255) {
+                        || name.length() > 120
+                        || (description != null && description.length() > 500)) {
                     response.sendError(400, "Invalid category name");
                     return;
                 }

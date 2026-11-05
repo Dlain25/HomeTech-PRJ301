@@ -1,0 +1,7 @@
+# Copy outside the project to %USERPROFILE%/.hometech/public-db.properties.
+# Use the existing SQL Server database; this application never creates a schema.
+# Alternatively set HOMETECH_DB_URL, HOMETECH_DB_USER, HOMETECH_DB_PASSWORD.
+# A custom configuration path can be set with HOMETECH_DB_CONFIG.
+hometech.db.url=jdbc:sqlserver://localhost:1433;databaseName=YOUR_EXISTING_DATABASE;encrypt=true;trustServerCertificate=true
+hometech.db.user=YOUR_SQL_LOGIN
+hometech.db.password=YOUR_LOCAL_PASSWORD

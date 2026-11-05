@@ -1,5 +1,5 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
@@ -180,7 +180,7 @@
                                 </td>
 
                                 <td>
-                                    <c:out value="${order.createdAt}"/>
+                                    <c:out value="${order.createdAtText}"/>
                                 </td>
 
                                 <td class="price">
@@ -190,8 +190,8 @@
                                 </td>
 
                                 <td>
-                                    <span class="status ${order.orderStatus == 'CANCELLED' ? 'cancelled' : (order.orderStatus == 'COMPLETED' ? 'completed' : '')}">
-                                        <c:out value="${order.orderStatus}"/>
+                                    <span class="status ${order.orderStatus == 'CANCELLED' ? 'cancelled' : (order.orderStatus == 'DELIVERED' ? 'completed' : '')}">
+                                        <c:out value="${order.statusText}"/>
                                     </span>
                                 </td>
 

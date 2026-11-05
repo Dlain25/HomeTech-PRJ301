@@ -1,18 +1,29 @@
-# NetBeans build files
 /build/
 /dist/
-
-# NetBeans private settings
 /nbproject/private/
-
-# Java compiled files
-*.class
-
-# Temporary files
+/.local/
 *.log
-*.tmp
-*.bak
-
-# Environment and secrets
+*.war
+*.class
 .env
 .env.*
+!.env.example
+**/public-db.properties
+**/db.properties
+**/secrets.properties
+/target/
+/out/
+/.idea/
+/.vscode/
+*.iml
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+Thumbs.db
+/config/database.properties
+*.pem
+*.key
+*.p12
+*.pfx

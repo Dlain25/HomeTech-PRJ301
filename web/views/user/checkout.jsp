@@ -1,5 +1,5 @@
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
@@ -220,7 +220,7 @@
                        id="recipientName"
                        name="recipientName"
                        value="<c:out value='${recipientName}'/>"
-                       maxlength="255"
+                       maxlength="120"
                        required>
                 <div class="error">
                     <c:out value="${errors.recipientName}"/>

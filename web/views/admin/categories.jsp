@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
 <%@page import="model.Category"%>
 
@@ -100,7 +100,7 @@
 
         <input type="text" name="categoryName"
                placeholder="Category name"
-               maxlength="255" required>
+               maxlength="120" required>
 
         <input type="text" name="description"
                placeholder="Description">
@@ -148,7 +148,7 @@
 
                 <input type="text" name="categoryName"
                        value="<%= esc(c.getCategoryName()) %>"
-                       maxlength="255" required>
+                       maxlength="120" required>
 
                 <input type="text" name="description"
                        value="<%= esc(c.getDescription()) %>">

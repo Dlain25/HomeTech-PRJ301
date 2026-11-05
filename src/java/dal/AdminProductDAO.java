@@ -192,6 +192,10 @@ public class AdminProductDAO extends BaseDAO {
             stock < 0 || warrantyMonths < 0) {
             throw new IllegalArgumentException("Invalid product data");
         }
+        if (sku.trim().length() > 60 || productName.trim().length() > 200
+                || warrantyMonths > Short.MAX_VALUE || (imageUrl != null && imageUrl.trim().length() > 500)) {
+            throw new IllegalArgumentException("Thông tin sản phẩm vượt giới hạn cho phép");
+        }
 
         boolean oldAutoCommit = connection.getAutoCommit();
 
@@ -350,6 +354,10 @@ public class AdminProductDAO extends BaseDAO {
             variantName == null || variantName.trim().isEmpty() ||
             price == null || price.signum() < 0) {
             throw new IllegalArgumentException("Invalid variant data");
+        }
+        if (variantSku.trim().length() > 80 || variantName.trim().length() > 120
+                || (color != null && color.length() > 60)) {
+            throw new IllegalArgumentException("Thông tin phiên bản vượt giới hạn cho phép");
         }
 
         String sql =

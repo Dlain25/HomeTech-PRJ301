@@ -45,7 +45,7 @@ public class OrderDAO extends BaseDAO {
             List<OrderItem> items = new ArrayList<>();
             String sqlItems = "SELECT ci.variant_id, ci.quantity, v.price, v.variant_sku, v.is_active, "
                     + "p.product_name, p.status "
-                    + "FROM Carts c JOIN CartItems ci ON ci.cart_id = c.cart_id "
+                    + "FROM Carts c WITH (UPDLOCK, HOLDLOCK) JOIN CartItems ci WITH (UPDLOCK, HOLDLOCK) ON ci.cart_id = c.cart_id "
                     + "JOIN ProductVariants v ON v.variant_id = ci.variant_id "
                     + "JOIN Products p ON p.product_id = v.product_id "
                     + "WHERE c.user_id = ? ORDER BY ci.variant_id";

@@ -38,17 +38,17 @@
         function parsePrice() {
             const text = input.value.trim();
             if (text === "") return { value: null };
-            if (!/^(?:[0-9]{1,16}|[1-9][0-9]{0,2}(?:\.[0-9]{3})+)(?:[\u0111\u20AB])?$/.test(text)) return { invalid: true };
-            const value = BigInt(text.delete(/[.\u0111\u20AB]/g));
+            if (!/^(?:[0-9]{1,16}|[1-9][0-9]{0,2}(?:\.[0-9]{3})+)(?:[đ₫])?$/.test(text)) return { invalid: true };
+            const value = BigInt(text.replace(/[.đ₫]/g, ""));
             return value <= priceLimit ? { value } : { invalid: true };
         }
         function sync(format = false) {
             const parsed = parsePrice();
-            input.setCustomValidity(parsed.invalid ? "Vui l\u00F2ng nh\u1EADp s\u1ED1 nguy\u00EAn kh\u00F4ng \u00E2m, t\u1ED1i \u0111a 9.999.999.999.999.999\u0111." : "");
+            input.setCustomValidity(parsed.invalid ? "Vui lòng nhập số nguyên không âm, tối đa 9.999.999.999.999.999đ." : "");
             input.setAttribute("aria-invalid", String(Boolean(parsed.invalid)));
             raw.value = parsed.invalid || parsed.value === null ? "" : parsed.value.toString();
             if (format && !parsed.invalid) {
-                input.value = parsed.value === null ? "" : raw.value.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "\u0111";
+                input.value = parsed.value === null ? "" : raw.value.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
             }
             buttons.forEach(button => {
                 const down = button.dataset.priceStep === "-1";
@@ -93,9 +93,7 @@
         document.getElementById("variant-price").textContent = option.dataset.priceLabel;
         document.getElementById("variant-sku").textContent = option.dataset.sku;
         const label = document.getElementById("variant-stock");
-        label.textContent = stock > 0
-    ? `C\u00F2n h\u00E0ng \u00B7 ${stock} s\u1EA3n ph\u1EA9m`
-    : "H\u1EBFt h\u00E0ng";
+        label.textContent = stock > 0 ? `Còn hàng · ${stock} sản phẩm` : "Hết hàng";
         label.className = "stock-label " + (stock > 0 ? "in-stock" : "out-stock");
         quantity.max = String(stock);
         quantity.disabled = stock <= 0;

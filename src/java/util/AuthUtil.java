@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.SQLException;
+import dal.UserDAO;
 import model.User;
 
 public class AuthUtil {
@@ -16,6 +18,21 @@ public class AuthUtil {
     public static User requireLogin(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         User user = getUser(request);
+        if (user != null) {
+            try {
+                user = new UserDAO().getById(user.getUserId());
+                if (user == null || !"ACTIVE".equals(user.getStatus())) {
+                    request.getSession().invalidate();
+                    user = null;
+                } else {
+                    user.setPasswordHash(null);
+                    request.getSession().setAttribute("user", user);
+                }
+            } catch (SQLException e) {
+                response.sendError(503, "Cannot verify account at this time");
+                return null;
+            }
+        }
         if (user == null) {
             if ("GET".equalsIgnoreCase(request.getMethod())) {
                 String path = request.getRequestURI().substring(request.getContextPath().length());
