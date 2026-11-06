@@ -17,18 +17,29 @@
             <label class="ht-label" for="filter-q">Tên sản phẩm</label><input class="ht-input ht-bottom-large" id="filter-q" type="search" name="q" maxlength="200" value="<c:out value='${filter.q}'/>" placeholder="Ví dụ: nồi chiên">
             <label class="ht-label" for="categoryId">Danh mục</label><select class="ht-select ht-bottom-large" name="categoryId" id="categoryId"><option value="">Tất cả danh mục</option><c:if test="${categoryUnavailable}"><option value="${filter.categoryId}" selected>Danh mục không khả dụng (ID ${filter.categoryId})</option></c:if><c:forEach items="${categories}" var="category"><option value="${category.categoryId}" ${filter.categoryId == category.categoryId ? 'selected' : ''}><c:out value="${category.categoryName}"/></option></c:forEach></select>
             <label class="ht-label" for="brandId">Thương hiệu</label><select class="ht-select ht-bottom-large" name="brandId" id="brandId"><option value="">Tất cả thương hiệu</option><c:if test="${brandUnavailable}"><option value="${filter.brandId}" selected>Thương hiệu không khả dụng (ID ${filter.brandId})</option></c:if><c:forEach items="${brands}" var="brand"><option value="${brand.brandId}" ${filter.brandId == brand.brandId ? 'selected' : ''}><c:out value="${brand.brandName}"/></option></c:forEach></select>
-            <fieldset><legend class="ht-label">Khoảng giá (VNĐ)</legend>
-                <label class="ht-label ht-small" for="minPrice">Từ</label>
-                <div class="price-control ht-bottom-normal">
-                    <input class="ht-input" id="minPrice" type="text" inputmode="numeric" name="minPrice" pattern="[0-9]{1,16}" maxlength="22" value="<c:out value='${filter.minPrice}'/>" placeholder="Từ" data-vnd-price>
-                    <div class="price-stepper"><button type="button" data-price-target="minPrice" data-price-step="1" aria-label="Tăng giá từ thêm 100.000 đồng" disabled>▲</button><button type="button" data-price-target="minPrice" data-price-step="-1" aria-label="Giảm giá từ bớt 100.000 đồng" disabled>▼</button></div>
-                </div>
-                <label class="ht-label ht-small" for="maxPrice">Đến</label>
-                <div class="price-control">
-                    <input class="ht-input" id="maxPrice" type="text" inputmode="numeric" name="maxPrice" pattern="[0-9]{1,16}" maxlength="22" value="<c:out value='${filter.maxPrice}'/>" placeholder="Đến" data-vnd-price>
-                    <div class="price-stepper"><button type="button" data-price-target="maxPrice" data-price-step="1" aria-label="Tăng giá đến thêm 100.000 đồng" disabled>▲</button><button type="button" data-price-target="maxPrice" data-price-step="-1" aria-label="Giảm giá đến bớt 100.000 đồng" disabled>▼</button></div>
-                </div>
-            </fieldset>
+        <fieldset>
+            <legend class="ht-label">Khoảng giá (VNĐ)</legend>
+
+            <label class="ht-label ht-small" for="minPrice">Từ</label>
+            <input class="ht-input ht-bottom-normal"
+                   id="minPrice"
+                   name="minPrice"
+                   type="number"
+                   min="0"
+                   step="1"
+                   value="${filter.minPrice}"
+                   placeholder="Ví dụ: 10000">
+
+            <label class="ht-label ht-small" for="maxPrice">Đến</label>
+            <input class="ht-input"
+                   id="maxPrice"
+                   name="maxPrice"
+                   type="number"
+                   min="0"
+                   step="1"
+                   value="${filter.maxPrice}"
+                   placeholder="Ví dụ: 100000">
+        </fieldset>
             <button class="ht-button ht-button-primary ht-full-width ht-top-normal" type="submit">Áp dụng</button>
         </div></aside>
         <section class="ht-desktop-three-quarters" aria-label="Kết quả sản phẩm"><div class="results-toolbar"><p><strong>${totalProducts}</strong> sản phẩm<c:if test="${not empty filter.q}"> cho “<c:out value="${filter.q}"/>”</c:if></p><div class="sort-control"><label for="sort">Sắp xếp:</label><select class="ht-select" name="sort" id="sort"><option value="newest" ${filter.sort == 'newest' ? 'selected' : ''}>Mới nhất</option><option value="priceAsc" ${filter.sort == 'priceAsc' ? 'selected' : ''}>Giá tăng dần</option><option value="priceDesc" ${filter.sort == 'priceDesc' ? 'selected' : ''}>Giá giảm dần</option></select><button class="ht-button ht-button-outline ht-button-small" type="submit">Xem</button></div></div>
