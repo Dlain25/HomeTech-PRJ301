@@ -12,7 +12,7 @@ public class UserDAO implements AutoCloseable {
             "SELECT u.user_id, u.role_id, r.role_name, "
             + "u.username, u.email, u.password_hash, "
             + "u.full_name, u.phone, u.status, "
-            + "u.created_at, u.updated_at "
+            + "u.created_at, u.updated_at, u.auth_version "
             + "FROM Users u "
             + "JOIN Roles r ON u.role_id = r.role_id ";
 
@@ -20,6 +20,7 @@ public class UserDAO implements AutoCloseable {
         User u = new User();
 
         u.setUserId(rs.getInt("user_id"));
+        u.setAuthVersion(rs.getInt("auth_version"));
         u.setRoleId(rs.getInt("role_id"));
         u.setRoleName(rs.getString("role_name"));
         u.setUsername(rs.getString("username"));
@@ -312,24 +313,22 @@ public class UserDAO implements AutoCloseable {
         return false;
     }
 
-    public boolean updatePassword(int userId, String newHash) {
-        String sql =
-                "UPDATE Users SET password_hash = ?, "
-                + "updated_at = SYSUTCDATETIME() "
-                + "WHERE user_id = ?";
-
-        try (Connection con = DBContext.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, newHash);
-            ps.setInt(2, userId);
-
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+    public boolean updatePassword(int userId, String newHash, String expectedHash) {
+        try (Connection con = DBContext.getConnection()) {
+            con.setAutoCommit(false);
+            try {
+                try (PreparedStatement ps = con.prepareStatement(
+                    "UPDATE Users SET password_hash=?,auth_version=auth_version+1,updated_at=SYSUTCDATETIME() WHERE user_id=? AND password_hash=? AND status='ACTIVE'")) {
+                    ps.setString(1,newHash); ps.setInt(2,userId); ps.setString(3,expectedHash);
+                    if (ps.executeUpdate()!=1) { con.rollback(); return false; }
+                }
+                try (PreparedStatement ps = con.prepareStatement(
+                    "UPDATE PasswordResetTokens SET used_at=SYSUTCDATETIME() WHERE user_id=? AND used_at IS NULL")) {
+                    ps.setInt(1,userId); ps.executeUpdate();
+                }
+                con.commit(); return true;
+            } catch (SQLException e) { con.rollback(); throw e; }
+        } catch (SQLException e) { return false; }
     }
 
     // Tuong thich voi try-with-resources cua Member 2.

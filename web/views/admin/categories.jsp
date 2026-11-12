@@ -62,7 +62,7 @@
     </style>
 </head>
 
-<body>
+<body><nav style="padding:16px;display:flex;gap:18px;flex-wrap:wrap;background:#eef5fc;margin-bottom:20px"><a href="${pageContext.request.contextPath}/admin/dashboard">Tổng quan</a><a href="${pageContext.request.contextPath}/admin/orders">Duyệt đơn &amp; thu tiền</a><a href="${pageContext.request.contextPath}/admin/reports">Báo cáo &amp; tiến độ</a><a href="${pageContext.request.contextPath}/admin/topups">Duyệt nạp ví</a><a href="${pageContext.request.contextPath}/admin/services">Gói dịch vụ</a><a href="${pageContext.request.contextPath}/admin/returns">Hoàn hàng</a></nav>
 
 <div style="display:flex;
             gap:12px;
@@ -111,7 +111,7 @@
         </select>
 
         <button type="submit">Add Category</button>
-    </form>
+    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
 </div>
 
 <h2>Category List</h2>
@@ -165,7 +165,7 @@
                 </select>
 
                 <button type="submit">Update</button>
-            </form>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
 
             <form method="post"
                   action="<%= path %>/admin/categories">
@@ -176,7 +176,7 @@
                        value="<%= c.getCategoryId() %>">
 
                 <button type="submit">Deactivate</button>
-            </form>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
         </td>
     </tr>
 

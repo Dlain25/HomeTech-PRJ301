@@ -36,6 +36,15 @@ public class OrderDAO extends BaseDAO {
 
     public long createOrder(int userId, String recipientName, String recipientPhone,
             String address, String note, String paymentMethod) throws OrderException {
+        return createOrder(userId,recipientName,recipientPhone,address,note,paymentMethod,
+            java.time.LocalDate.now(util.DeliveryDateUtil.ZONE).plusDays(1),"ANY");
+    }
+
+    public long createOrder(int userId, String recipientName, String recipientPhone,
+            String address, String note, String paymentMethod, java.time.LocalDate deliveryDate, String deliverySlot) throws OrderException {
+        try { util.DeliveryDateUtil.parse(deliveryDate.toString(),deliverySlot,java.time.Clock.systemUTC()); }
+        catch (RuntimeException e) { throw new OrderException("Ngày nhận hàng không hợp lệ"); }
+        if (!"COD".equals(paymentMethod) && !"BANK_TRANSFER".equals(paymentMethod)) throw new OrderException("Phương thức thanh toán không hợp lệ");
         boolean oldAuto = true;
         try {
             oldAuto = connection.getAutoCommit();
@@ -76,6 +85,10 @@ public class OrderDAO extends BaseDAO {
                 subtotal = subtotal.add(it.getLineTotal());
             }
 
+            if ("BANK_TRANSFER".equals(paymentMethod)) {
+                try { util.VietQrUtil.fromEnvironment(subtotal.add(SHIPPING_FEE), "HTCHECK"); }
+                catch (RuntimeException e) { throw new OrderException("Chuyển khoản chưa được cấu hình hoặc số tiền QR không hợp lệ. Vui lòng chọn COD."); }
+            }
             // 2. Trừ tồn kho (chỉ trừ được khi còn đủ hàng)
             String sqlStock = "UPDATE Inventory SET quantity_available = quantity_available - ?, "
                     + "updated_at = SYSUTCDATETIME() WHERE variant_id = ? AND quantity_available >= ?";
@@ -93,7 +106,7 @@ public class OrderDAO extends BaseDAO {
             // 3. Tạo đơn hàng (total_amount là cột tự tính, không đưa vào INSERT)
             long orderId;
             String sqlOrder = "INSERT INTO Orders (user_id, recipient_name, recipient_phone, "
-                    + "shipping_address, note, subtotal, shipping_fee) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    + "shipping_address, note, subtotal, shipping_fee, desired_delivery_date, delivery_slot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement ps = connection.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setInt(1, userId);
                 ps.setString(2, recipientName);
@@ -106,6 +119,8 @@ public class OrderDAO extends BaseDAO {
                 }
                 ps.setBigDecimal(6, subtotal);
                 ps.setBigDecimal(7, SHIPPING_FEE);
+                ps.setDate(8,java.sql.Date.valueOf(deliveryDate));
+                ps.setString(9,deliverySlot);
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (!keys.next()) {
@@ -133,10 +148,11 @@ public class OrderDAO extends BaseDAO {
 
             // 5. Thanh toán (trạng thái mặc định PENDING)
             try (PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO Payments (order_id, payment_method, amount) VALUES (?, ?, ?)")) {
+                    "INSERT INTO Payments (order_id, payment_method, amount, transfer_code) VALUES (?, ?, ?, ?)")) {
                 ps.setLong(1, orderId);
                 ps.setString(2, paymentMethod);
                 ps.setBigDecimal(3, subtotal.add(SHIPPING_FEE));
+                ps.setString(4,"BANK_TRANSFER".equals(paymentMethod)?"HTOD"+orderId:null);
                 ps.executeUpdate();
             }
 
@@ -172,7 +188,7 @@ public class OrderDAO extends BaseDAO {
     //lịch sử đơn hàng
     private static final String ORDER_SELECT
             = "SELECT o.order_id, o.user_id, o.recipient_name, o.recipient_phone, o.shipping_address, o.note, "
-            + "o.subtotal, o.shipping_fee, o.total_amount, o.order_status, o.created_at, "
+            + "o.subtotal, o.shipping_fee, o.total_amount, o.order_status, o.created_at, o.desired_delivery_date, o.delivery_slot, o.delivered_at, "
             + "(SELECT TOP 1 pay.payment_method FROM Payments pay WHERE pay.order_id = o.order_id "
             + " ORDER BY pay.payment_id DESC) AS payment_method, "
             + "(SELECT TOP 1 pay.payment_status FROM Payments pay WHERE pay.order_id = o.order_id "
@@ -182,6 +198,11 @@ public class OrderDAO extends BaseDAO {
     private Order mapOrder(ResultSet rs) throws SQLException {
         Order o = new Order();
         o.setOrderId(rs.getLong("order_id"));
+        java.sql.Date delivery=rs.getDate("desired_delivery_date");
+        o.setDesiredDeliveryDate(delivery==null?null:delivery.toLocalDate());
+        o.setDeliverySlot(rs.getString("delivery_slot"));
+        java.sql.Timestamp delivered=rs.getTimestamp("delivered_at");
+        o.setDeliveredAt(delivered==null?null:delivered.toLocalDateTime().plusHours(7));
         o.setUserId(rs.getInt("user_id"));
         o.setRecipientName(rs.getString("recipient_name"));
         o.setRecipientPhone(rs.getString("recipient_phone"));
@@ -255,67 +276,11 @@ public class OrderDAO extends BaseDAO {
     }
 
     public void cancelOrder(long orderId, int userId) throws OrderException {
-        boolean oldAuto = true;
-        try {
-            oldAuto = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-
-            String status = null;
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "SELECT order_status FROM Orders WITH (UPDLOCK) WHERE order_id = ? AND user_id = ?")) {
-                ps.setLong(1, orderId);
-                ps.setInt(2, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        status = rs.getString(1);
-                    }
-                }
-            }
-            if (status == null) {
-                throw new OrderException("Không tìm thấy đơn hàng");
-            }
-            if (!"PENDING".equals(status)) {
-                throw new OrderException("Chỉ hủy được đơn đang chờ xác nhận");
-            }
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "UPDATE Orders SET order_status = 'CANCELLED', updated_at = SYSUTCDATETIME() "
-                    + "WHERE order_id = ? AND order_status = 'PENDING'")) {
-                ps.setLong(1, orderId);
-                if (ps.executeUpdate() == 0) {
-                    throw new OrderException("Đơn hàng đã thay đổi trạng thái, không thể hủy");
-                }
-            }
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "UPDATE inv SET inv.quantity_available = inv.quantity_available + oi.quantity, "
-                    + "inv.updated_at = SYSUTCDATETIME() "
-                    + "FROM Inventory inv JOIN OrderItems oi ON oi.variant_id = inv.variant_id "
-                    + "WHERE oi.order_id = ?")) {
-                ps.setLong(1, orderId);
-                ps.executeUpdate();
-            }
-
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "UPDATE Payments SET payment_status = 'FAILED' "
-                    + "WHERE order_id = ? AND payment_status = 'PENDING'")) {
-                ps.setLong(1, orderId);
-                ps.executeUpdate();
-            }
-
-            connection.commit();
-        } catch (OrderException e) {
-            rollbackQuietly();
-            throw e;
-        } catch (SQLException e) {
-            rollbackQuietly();
-            e.printStackTrace();
-            throw new OrderException("Không thể hủy đơn lúc này, vui lòng thử lại");
-        } finally {
-            try {
-                connection.setAutoCommit(oldAuto);
-            } catch (SQLException ignored) {
-            }
+        try (WorkflowDAO dao=new WorkflowDAO()) {
+            dao.orderAction(userId,orderId,"cancelUser",null);
+        } catch (SQLException | IllegalArgumentException e) {
+            throw new OrderException(e instanceof SQLException && (((SQLException)e).getSQLState()==null || !((SQLException)e).getSQLState().startsWith("HT"))
+                ? "Không thể hủy đơn lúc này, vui lòng thử lại" : e.getMessage());
         }
     }
 }

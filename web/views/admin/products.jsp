@@ -297,7 +297,7 @@
     </style>
 </head>
 
-<body>
+<body><nav style="padding:16px;display:flex;gap:18px;flex-wrap:wrap;background:#eef5fc;margin-bottom:20px"><a href="${pageContext.request.contextPath}/admin/dashboard">Tổng quan</a><a href="${pageContext.request.contextPath}/admin/orders">Duyệt đơn &amp; thu tiền</a><a href="${pageContext.request.contextPath}/admin/reports">Báo cáo &amp; tiến độ</a><a href="${pageContext.request.contextPath}/admin/topups">Duyệt nạp ví</a><a href="${pageContext.request.contextPath}/admin/services">Gói dịch vụ</a><a href="${pageContext.request.contextPath}/admin/returns">Hoàn hàng</a></nav>
 
 <header class="top">
     <h1>HomeTech Admin - Product Management</h1>

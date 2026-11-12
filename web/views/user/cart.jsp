@@ -204,7 +204,7 @@
                                            min="1"
                                            max="${item.stock}">
                                     <button type="submit">Cập nhật</button>
-                                </form>
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
                             </td>
 
                             <td>
@@ -221,7 +221,7 @@
                                     <button class="remove" type="submit">
                                         Xóa
                                     </button>
-                                </form>
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
                             </td>
                         </tr>
                     </c:forEach>

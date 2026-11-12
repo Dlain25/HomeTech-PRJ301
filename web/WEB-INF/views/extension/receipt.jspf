@@ -1,0 +1,5 @@
+<%@ page pageEncoding="UTF-8" %>
+<label>Số tiền thực nhận (VND)<input name="amount" type="number" min="1" step="1" required placeholder="Nhập theo sao kê"></label>
+<label>Mã giao dịch sao kê<input name="reference" maxlength="150" required placeholder="Ngân hàng:tài khoản:mã giao dịch"></label>
+<label>Thời gian nhận tiền (giờ Việt Nam)<input name="receivedAt" type="datetime-local" value="${receivedDefault}" required></label>
+<label class="ex-check"><input type="checkbox" name="verified" value="yes" required> Tôi đã đối chiếu đúng tài khoản, số tiền và giao dịch thực nhận.</label>

@@ -123,7 +123,7 @@
 
 <div class="container">
 
-    <h1>Lịch sử đơn hàng HomeTech</h1>
+    <h1>Lịch sử đơn hàng HomeTech</h1><div style="display:flex;gap:16px;flex-wrap:wrap;margin:16px 0"><a href="${pageContext.request.contextPath}/wallet">Ví &amp; nạp tiền</a><a href="${pageContext.request.contextPath}/services">Gói dịch vụ</a><a href="${pageContext.request.contextPath}/returns">Yêu cầu hoàn hàng</a></div>
 
     <a href="${pageContext.request.contextPath}/">
         Quay về trang chủ

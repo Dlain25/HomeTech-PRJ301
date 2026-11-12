@@ -32,7 +32,7 @@ public class AdminUserServlet extends HttpServlet {
 
         User user = (User) currentUser;
 
-        if (user.getRoleId() != 1
+        if (!user.isAdmin()
                 || !"ACTIVE".equals(user.getStatus())) {
             return null;
         }

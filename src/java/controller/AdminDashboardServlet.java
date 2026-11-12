@@ -53,7 +53,7 @@ public class AdminDashboardServlet extends HttpServlet {
             User current = new dal.UserDAO().getById(user.getUserId());
 
             if (current == null
-                    || current.getRoleId() != 1
+                    || !current.isAdmin()
                     || !"ACTIVE".equals(current.getStatus())) {
 
                 response.sendError(
@@ -88,13 +88,18 @@ public class AdminDashboardServlet extends HttpServlet {
             int totalUsers = dao.getTotalUsers();
             int totalOrders = dao.getTotalOrders();
 
-            BigDecimal totalRevenue = dao.getTotalRevenue();
+            boolean canReport;
+            try (dal.ExtensionDAO permissions = new dal.ExtensionDAO()) {
+                canReport = permissions.permissions(((User)request.getSession().getAttribute("user")).getUserId()).contains("REPORT_VIEW");
+            }
+            request.setAttribute("canReport",canReport);
+            BigDecimal totalRevenue = canReport ? dao.getTotalRevenue() : null;
 
             List<Object[]> monthlyRevenue =
-                    dao.getMonthlyRevenue();
+                    canReport ? dao.getMonthlyRevenue() : java.util.Collections.emptyList();
 
             List<Object[]> topSellingProducts =
-                    dao.getTopSellingProducts();
+                    canReport ? dao.getTopSellingProducts() : java.util.Collections.emptyList();
 
             request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("totalUsers", totalUsers);

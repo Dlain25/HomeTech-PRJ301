@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 
 public class User {
 
+    private int authVersion;
+    public int getAuthVersion() { return authVersion; }
+    public void setAuthVersion(int value) { authVersion=value; }
     private int userId;
     private int roleId;
     private String roleName;

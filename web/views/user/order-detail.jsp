@@ -165,6 +165,11 @@
 <div class="container">
 
     <h1>Chi tiết đơn hàng #${order.orderId}</h1>
+<div style="padding:16px;background:#fff;border-radius:10px;margin:16px 0">
+<p>Ngày có thể nhận: <c:out value="${empty order.desiredDeliveryDate?'Chưa có lịch':order.desiredDeliveryDate}"/> · <c:out value="${order.deliverySlotText}"/></p>
+<c:if test="${order.paymentMethod=='BANK_TRANSFER' && order.paymentStatus=='PENDING' && order.orderStatus!='CANCELLED'}"><a href="${pageContext.request.contextPath}/payment/qr?kind=order&amp;id=${order.orderId}">Xem mã QR &amp; báo chuyển khoản</a></c:if>
+<c:if test="${order.orderStatus=='DELIVERED' && order.paymentStatus=='PAID'}"><p><a href="${pageContext.request.contextPath}/returns?orderId=${order.orderId}">Yêu cầu hoàn hàng (trong 7 ngày)</a></p></c:if>
+<a href="${pageContext.request.contextPath}/returns">Xem trạng thái hoàn hàng</a></div>
 
     <a href="${pageContext.request.contextPath}/orders">
         Quay lại lịch sử đơn hàng
@@ -352,7 +357,7 @@
                 <button type="submit" class="btn btn-danger">
                     Hủy đơn hàng
                 </button>
-            </form>
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
         </c:if>
 
     </section>

@@ -248,6 +248,20 @@
                     <c:out value="${errors.shippingAddress}"/>
                 </div>
 
+                <label for="desiredDeliveryDate">Ngày có thể nhận hàng *</label>
+                <input type="date" id="desiredDeliveryDate" name="desiredDeliveryDate" required
+                       min="${minDeliveryDate}" max="${maxDeliveryDate}" value="<c:out value='${desiredDeliveryDate}'/>">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+                  <c:forEach var="date" items="${suggestedDates}"><button type="button" data-delivery-date="${date}">${date}</button></c:forEach>
+                </div>
+                <label for="deliverySlot">Khung giờ có thể nhận</label>
+                <select name="deliverySlot" id="deliverySlot" style="padding:12px;width:100%">
+                  <option value="ANY" ${deliverySlot=='ANY'?'selected':''}>Cả ngày</option>
+                  <option value="AM" ${deliverySlot=='AM'?'selected':''}>Buổi sáng</option>
+                  <option value="PM" ${deliverySlot=='PM'?'selected':''}>Buổi chiều</option>
+                </select>
+                <div class="error"><c:out value="${errors.deliveryDate}"/></div>
+                <p class="notice">Chọn từ ngày mai đến 14 ngày tới. Cửa hàng sẽ đối chiếu lịch giao khi duyệt đơn.</p>
                 <label for="note">Ghi chú đơn hàng</label>
                 <textarea id="note"
                           name="note"
@@ -273,19 +287,16 @@
                     <input type="radio"
                            name="paymentMethod"
                            value="BANK_TRANSFER"
-                           ${paymentMethod == 'BANK_TRANSFER' ? 'checked' : ''}>
-                    <span>Chuyển khoản ngân hàng</span>
+                           ${paymentMethod == 'BANK_TRANSFER' ? 'checked' : ''} ${!bankReady?'disabled':''}>
+                    <img src="${pageContext.request.contextPath}/assets/images/bank-transfer.svg" width="42" height="42" alt="Ngân hàng"><span>Chuyển khoản ngân hàng · Quét QR</span>
                 </label>
 
                 <div class="error">
                     <c:out value="${errors.paymentMethod}"/>
                 </div>
 
-                <p class="notice">
-                    Lưu ý: Chức năng chuyển khoản hiện chỉ ghi
-                    nhận phương thức thanh toán, chưa tích hợp
-                    cổng thanh toán hoặc xác nhận chuyển khoản.
-                </p>
+                <p class="notice">Chọn chuyển khoản để xem mã QR theo số tiền của đơn sau khi xác nhận đặt hàng. Admin kiểm tra giao dịch trước khi xác nhận đã thanh toán.</p>
+                <c:if test="${!bankReady}"><p class="notice">Chuyển khoản chưa được cấu hình. Hiện bạn có thể chọn COD.</p></c:if>
 
             </section>
 
@@ -359,8 +370,9 @@
             </section>
 
         </div>
-    </form>
+    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
 
 </div>
+<script src="${pageContext.request.contextPath}/assets/js/extensions.js" defer></script>
 </body>
 </html>

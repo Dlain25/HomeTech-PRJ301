@@ -1,4 +1,3 @@
-
 <%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
 <%@page import="java.math.BigDecimal"%>
@@ -6,9 +5,13 @@
 <%@page import="java.util.Locale"%>
 
 <%!
-    private String esc(String s) {
-        if (s == null) return "";
-        return s.replace("&", "&amp;")
+    private String esc(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        return String.valueOf(value)
+                .replace("&", "&amp;")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
@@ -16,19 +19,24 @@
     }
 
     private String money(BigDecimal amount) {
-        if (amount == null) amount = BigDecimal.ZERO;
+        if (amount == null) {
+            amount = BigDecimal.ZERO;
+        }
 
-        NumberFormat format =
-                NumberFormat.getNumberInstance(
-                        Locale.forLanguageTag("vi-VN"));
+        NumberFormat format = NumberFormat.getNumberInstance(
+                Locale.forLanguageTag("vi-VN")
+        );
 
         format.setMaximumFractionDigits(0);
+        format.setMinimumFractionDigits(0);
 
         return format.format(amount) + " đ";
     }
 %>
 
 <%
+    String path = request.getContextPath();
+
     Integer totalProducts =
             (Integer) request.getAttribute("totalProducts");
 
@@ -41,25 +49,23 @@
     BigDecimal totalRevenue =
             (BigDecimal) request.getAttribute("totalRevenue");
 
+    boolean canReport =
+            Boolean.TRUE.equals(request.getAttribute("canReport"));
+
     List<Object[]> monthlyRevenue =
             (List<Object[]>) request.getAttribute("monthlyRevenue");
 
     List<Object[]> topSellingProducts =
             (List<Object[]>) request.getAttribute("topSellingProducts");
-
-    String path = request.getContextPath();
 %>
 
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
-
-    <title>HomeTech - Admin Dashboard</title>
+    <title>HomeTech - Quản trị</title>
 
     <style>
         * {
@@ -68,92 +74,178 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
             background: #f4f6fa;
             color: #243047;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.5;
         }
 
-        .header {
+        a {
+            color: #1769aa;
+        }
+
+        a:focus-visible {
+            outline: 3px solid #77b9ef;
+            outline-offset: 4px;
+        }
+
+        /* Tiêu đề */
+        .admin-header {
             background: #173b66;
-            color: white;
-            padding: 22px 35px;
+            color: #fff;
+            padding: 24px 32px;
         }
 
-        .header h1 {
-            margin: 0 0 8px;
+        .admin-header h1 {
+            margin: 0 0 6px;
+            font-size: clamp(24px, 3vw, 34px);
+            line-height: 1.25;
         }
 
-        .nav {
-            background: white;
-            padding: 15px 35px;
-            border-bottom: 1px solid #ddd;
+        .admin-header p {
+            margin: 0;
+            color: #e0ebf8;
+            font-size: 16px;
+        }
 
+        /* Một thanh menu, luôn nằm trên một hàng */
+        .admin-nav {
             display: flex;
             align-items: center;
-            gap: 25px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            gap: 20px;
+            padding: 0 32px;
+            background: #fff;
+            border-bottom: 1px solid #dce3ec;
+            overflow-x: auto;
         }
 
-        .nav a {
+        .admin-nav a {
+            display: block;
+            flex: 0 0 auto;
+            padding: 17px 0 14px;
+            border-bottom: 3px solid transparent;
             color: #173b66;
+            font-size: 14px;
+            font-weight: 600;
             text-decoration: none;
-            font-weight: bold;
-            transition: color 0.2s;
+            white-space: nowrap;
         }
 
-        .nav a:hover {
-            color: #1769aa;
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            color: #086ac1;
+            border-bottom-color: #086ac1;
         }
 
-        .nav a.active {
-            color: #1769aa;
-            border-bottom: 2px solid #1769aa;
-            padding-bottom: 5px;
+        /* Nội dung */
+        .dashboard {
+            width: 100%;
+            max-width: 1400px;
+            margin: 28px auto;
+            padding: 0 24px 32px;
         }
 
-        .container {
-            max-width: 1250px;
-            margin: 30px auto;
-            padding: 0 20px;
+        .page-heading {
+            margin-bottom: 22px;
         }
 
+        .page-heading h2 {
+            margin: 0 0 5px;
+            color: #173b66;
+            font-size: 24px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #64748b;
+        }
+
+        /* Thẻ thống kê */
         .stats {
             display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
         }
 
         .stat-card {
-            background: white;
+            min-width: 0;
+            padding: 24px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+            box-shadow: 0 3px 12px rgba(23, 59, 102, 0.04);
         }
 
-        .stat-card h3 {
+        .stat-label {
+            margin: 0 0 12px;
             color: #64748b;
-            font-size: 15px;
-            margin: 0 0 15px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        .stat-card .value {
+        .stat-value {
             color: #173b66;
-            font-size: 29px;
-            font-weight: bold;
+            font-size: clamp(23px, 2.3vw, 32px);
+            font-weight: 700;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
         }
 
-        .section {
-            background: white;
-            margin-top: 28px;
-            padding: 25px;
+        .stat-value.restricted {
+            color: #64748b;
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+        .revenue-note {
+            margin: 18px 0 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .revenue-note a {
+            font-weight: 600;
+        }
+
+        /* Bảng dữ liệu */
+        .panel {
+            margin-top: 26px;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+            box-shadow: 0 3px 12px rgba(23, 59, 102, 0.04);
         }
 
-        .section h2 {
-            margin-top: 0;
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .panel-header h2 {
+            margin: 0;
             color: #173b66;
+            font-size: 20px;
+        }
+
+        .panel-header a {
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .panel-header a:hover {
+            text-decoration: underline;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
         }
 
         table {
@@ -161,246 +253,314 @@
             border-collapse: collapse;
         }
 
-        th, td {
-            padding: 13px;
+        th,
+        td {
+            padding: 15px 24px;
             text-align: left;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #edf1f6;
         }
 
         th {
-            background: #f0f4fa;
+            background: #f1f5fa;
             color: #173b66;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .number {
+            text-align: right;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
         }
 
         .empty {
-            text-align: center;
+            padding: 32px 24px;
             color: #64748b;
-            padding: 25px;
+            text-align: center;
         }
 
-        .table-wrap {
-            overflow-x: auto;
+        .permission-message {
+            margin: 0;
+            padding: 28px 24px;
+            color: #64748b;
+        }
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .admin-header {
+                padding: 22px 16px;
+            }
+
+            .admin-nav {
+                gap: 18px;
+                padding: 0 16px;
+            }
+
+            .dashboard {
+                margin-top: 20px;
+                padding: 0 16px 24px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .panel-header,
+            th,
+            td {
+                padding: 14px 16px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- ADMIN HEADER -->
-
-<header class="header">
-
+<header class="admin-header">
     <h1>HomeTech Admin Dashboard</h1>
-
-    <div>
-        Thống kê hoạt động kinh doanh
-    </div>
-
+    <p>Thống kê hoạt động kinh doanh</p>
 </header>
 
-<!-- ADMIN NAVIGATION -->
-
-<nav class="nav">
-
-    <a href="<%= path %>/admin/dashboard"
-       class="active">
-        Dashboard
+<nav class="admin-nav" aria-label="Menu quản trị">
+    <a href="<%= esc(path) %>/admin/dashboard"
+       class="active"
+       aria-current="page">
+        Tổng quan
     </a>
 
-    <a href="<%= path %>/admin/categories">
-        Categories
+    <a href="<%= esc(path) %>/admin/categories">
+        Danh mục
     </a>
 
-    <!-- NEW: PRODUCT MANAGEMENT -->
-    <a href="<%= path %>/admin/products">
-        Products
+    <a href="<%= esc(path) %>/admin/products">
+        Sản phẩm
     </a>
 
-    <a href="<%= path %>/admin/users">
-        Users
+    <a href="<%= esc(path) %>/admin/users">
+        Người dùng
     </a>
 
-    <a href="<%= path %>/home">
+    <a href="<%= esc(path) %>/admin/orders">
+        Duyệt đơn &amp; thu tiền
+    </a>
+
+    <a href="<%= esc(path) %>/admin/reports">
+        Báo cáo &amp; tiến độ
+    </a>
+
+    <a href="<%= esc(path) %>/admin/topups">
+        Duyệt nạp ví
+    </a>
+
+    <a href="<%= esc(path) %>/admin/services">
+        Gói dịch vụ
+    </a>
+
+    <a href="<%= esc(path) %>/admin/returns">
+        Hoàn hàng
+    </a>
+
+    <a href="<%= esc(path) %>/home">
         Trang chủ
     </a>
-
 </nav>
 
-<!-- DASHBOARD CONTENT -->
+<main class="dashboard">
 
-<main class="container">
-
-    <!-- STATISTICS -->
-
-    <div class="stats">
-
-        <div class="stat-card">
-
-            <h3>Tổng sản phẩm</h3>
-
-            <div class="value">
-                <%= totalProducts == null ? 0 : totalProducts %>
-            </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <h3>Tổng người dùng</h3>
-
-            <div class="value">
-                <%= totalUsers == null ? 0 : totalUsers %>
-            </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <h3>Tổng đơn hàng</h3>
-
-            <div class="value">
-                <%= totalOrders == null ? 0 : totalOrders %>
-            </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <h3>Tổng doanh thu</h3>
-
-            <div class="value">
-                <%= money(totalRevenue) %>
-            </div>
-
-        </div>
-
+    <div class="page-heading">
+        <h2>Tổng quan hệ thống</h2>
+        <p>Theo dõi sản phẩm, người dùng, đơn hàng và doanh thu.</p>
     </div>
 
-    <!-- MONTHLY REVENUE -->
-
-    <section class="section">
-
-        <h2>Doanh thu theo tháng</h2>
-
-        <div class="table-wrap">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Tháng</th>
-                        <th>Doanh thu</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                <%
-                    if (monthlyRevenue != null
-                            && !monthlyRevenue.isEmpty()) {
-
-                        for (Object[] row : monthlyRevenue) {
-                %>
-
-                    <tr>
-                        <td>
-                            Tháng <%= row[0] %>
-                        </td>
-
-                        <td>
-                            <%= money((BigDecimal) row[1]) %>
-                        </td>
-                    </tr>
-
-                <%
-                        }
-
-                    } else {
-                %>
-
-                    <tr>
-                        <td colspan="2" class="empty">
-                            Chưa có dữ liệu doanh thu
-                        </td>
-                    </tr>
-
-                <%
-                    }
-                %>
-
-                </tbody>
-
-            </table>
-
+    <div class="stats">
+        <div class="stat-card">
+            <h3 class="stat-label">Tổng sản phẩm</h3>
+            <div class="stat-value">
+                <%= totalProducts == null ? "—" : totalProducts %>
+            </div>
         </div>
 
+        <div class="stat-card">
+            <h3 class="stat-label">Tổng người dùng</h3>
+            <div class="stat-value">
+                <%= totalUsers == null ? "—" : totalUsers %>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3 class="stat-label">Tổng đơn hàng</h3>
+            <div class="stat-value">
+                <%= totalOrders == null ? "—" : totalOrders %>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3 class="stat-label">Tổng doanh thu thuần</h3>
+
+            <% if (canReport) { %>
+                <div class="stat-value">
+                    <%= totalRevenue == null ? "—" : money(totalRevenue) %>
+                </div>
+            <% } else { %>
+                <div class="stat-value restricted">
+                    Chưa được cấp quyền xem báo cáo
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <% if (canReport) { %>
+        <p class="revenue-note">
+            Doanh thu thuần gồm các đơn đã giao và thu đủ tiền,
+            trừ khoản hoàn tiền theo ngày hoàn.
+            Đơn cũ thiếu ngày giao chưa được tính.
+            <a href="<%= esc(path) %>/admin/reports">
+                Xem báo cáo chi tiết
+            </a>
+        </p>
+    <% } %>
+
+    <section class="panel" aria-labelledby="monthly-title">
+        <div class="panel-header">
+            <h2 id="monthly-title">Doanh thu theo tháng</h2>
+
+            <% if (canReport) { %>
+                <a href="<%= esc(path) %>/admin/reports">
+                    Xem báo cáo
+                </a>
+            <% } %>
+        </div>
+
+        <% if (!canReport) { %>
+
+            <p class="permission-message">
+                Tài khoản chưa được cấp quyền xem dữ liệu doanh thu.
+            </p>
+
+        <% } else { %>
+
+            <div class="table-wrap">
+                <table aria-labelledby="monthly-title">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tháng</th>
+                            <th scope="col" class="number">Doanh thu thuần</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <%
+                            if (monthlyRevenue != null
+                                    && !monthlyRevenue.isEmpty()) {
+
+                                for (Object[] row : monthlyRevenue) {
+                        %>
+                            <tr>
+                                <td>Tháng <%= esc(row[0]) %></td>
+                                <td class="number">
+                                    <%= money((BigDecimal) row[1]) %>
+                                </td>
+                            </tr>
+                        <%
+                                }
+                            } else {
+                        %>
+                            <tr>
+                                <td colspan="2" class="empty">
+                                    Chưa có dữ liệu doanh thu.
+                                </td>
+                            </tr>
+                        <%
+                            }
+                        %>
+                    </tbody>
+                </table>
+            </div>
+
+        <% } %>
     </section>
 
-    <!-- TOP SELLING PRODUCTS -->
+    <section class="panel" aria-labelledby="products-title">
+        <div class="panel-header">
+            <h2 id="products-title">Top 5 sản phẩm bán chạy</h2>
 
-    <section class="section">
-
-        <h2>Top 5 sản phẩm bán chạy</h2>
-
-        <div class="table-wrap">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Sản phẩm</th>
-                        <th>Số lượng đã bán</th>
-                        <th>Doanh thu</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                <%
-                    if (topSellingProducts != null
-                            && !topSellingProducts.isEmpty()) {
-
-                        for (Object[] row : topSellingProducts) {
-                %>
-
-                    <tr>
-
-                        <td>
-                            <%= esc((String) row[0]) %>
-                        </td>
-
-                        <td>
-                            <%= row[1] %>
-                        </td>
-
-                        <td>
-                            <%= money((BigDecimal) row[2]) %>
-                        </td>
-
-                    </tr>
-
-                <%
-                        }
-
-                    } else {
-                %>
-
-                    <tr>
-                        <td colspan="3" class="empty">
-                            Chưa có sản phẩm bán chạy
-                        </td>
-                    </tr>
-
-                <%
-                    }
-                %>
-
-                </tbody>
-
-            </table>
-
+            <a href="<%= esc(path) %>/admin/products">
+                Quản lý sản phẩm
+            </a>
         </div>
 
+        <% if (!canReport) { %>
+
+            <p class="permission-message">
+                Tài khoản chưa được cấp quyền xem thống kê bán hàng.
+            </p>
+
+        <% } else { %>
+
+            <div class="table-wrap">
+                <table aria-labelledby="products-title">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col" class="number">Số lượng đã bán</th>
+                            <th scope="col" class="number">Doanh thu</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <%
+                            if (topSellingProducts != null
+                                    && !topSellingProducts.isEmpty()) {
+
+                                for (Object[] row : topSellingProducts) {
+                        %>
+                            <tr>
+                                <td><%= esc(row[0]) %></td>
+                                <td class="number"><%= esc(row[1]) %></td>
+                                <td class="number">
+                                    <%= money((BigDecimal) row[2]) %>
+                                </td>
+                            </tr>
+                        <%
+                                }
+                            } else {
+                        %>
+                            <tr>
+                                <td colspan="3" class="empty">
+                                    Chưa có sản phẩm bán chạy.
+                                </td>
+                            </tr>
+                        <%
+                            }
+                        %>
+                    </tbody>
+                </table>
+            </div>
+
+        <% } %>
     </section>
 
 </main>

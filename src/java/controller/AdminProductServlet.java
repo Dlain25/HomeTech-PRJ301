@@ -19,7 +19,7 @@ import model.User;
 public class AdminProductServlet extends HttpServlet {
 
     private static final String VIEW = "/views/admin/products.jsp";
-    private static final String CSRF_KEY = "adminProductCsrf";
+    private static final String CSRF_KEY = "csrfToken";
 
     private boolean checkAdmin(HttpServletRequest request,
                                HttpServletResponse response)
@@ -41,7 +41,7 @@ public class AdminProductServlet extends HttpServlet {
 
         User user = (User) obj;
 
-        if (user.getRoleId() != 1
+        if (!user.isAdmin()
                 || !"ACTIVE".equals(user.getStatus())) {
 
             response.sendError(403, "Admin access required");

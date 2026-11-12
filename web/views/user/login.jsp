@@ -49,6 +49,7 @@
     </style>
 </head>
 <body>
+<c:if test="${param.passwordChanged=='1'}"><p style="padding:16px;text-align:center;color:green">Đã đổi mật khẩu. Vui lòng đăng nhập lại.</p></c:if>
     <div class="login-box">
         <h1>HomeTech</h1>
         <h2>Đăng nhập</h2>
@@ -68,7 +69,8 @@
                    autocomplete="current-password" required>
 
             <button type="submit">Đăng nhập</button>
-        </form>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
+        <p><a href="${pageContext.request.contextPath}/forgot-password">Quên mật khẩu?</a></p>
 
         <a class="back" href="${pageContext.request.contextPath}/home">
             Quay lại trang chủ

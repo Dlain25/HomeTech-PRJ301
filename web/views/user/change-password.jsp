@@ -184,7 +184,7 @@
                 Xác nhận đổi mật khẩu
             </button>
 
-        </form>
+        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
 
         <a class="back"
            href="${pageContext.request.contextPath}/profile">

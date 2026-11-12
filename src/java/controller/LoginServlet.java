@@ -78,6 +78,8 @@ public class LoginServlet extends HttpServlet {
         String next = (String) session.getAttribute("redirectAfterLogin");
         session.removeAttribute("redirectAfterLogin");
         session.setAttribute("user", user);
+        session.setAttribute("authVersionAtLogin", user.getAuthVersion());
+        session.setAttribute("csrfToken", util.ResetTokenUtil.generate());
 
         String target = request.getContextPath() + "/";
         if (next != null && next.startsWith("/") && !next.startsWith("//")) {

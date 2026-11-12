@@ -10,12 +10,14 @@
             <button type="submit" aria-label="Tìm kiếm">⌕</button>
         </form>
         <div class="header-actions">
-            <c:if test="${not empty sessionScope.user and sessionScope.user.roleId == 1 and sessionScope.user.status == 'ACTIVE'}"><a href="<c:url value='/admin/dashboard'/>">Quản trị</a></c:if>
+            <c:if test="${not empty sessionScope.user and sessionScope.user.admin and sessionScope.user.status == 'ACTIVE'}"><a href="<c:url value='/admin/dashboard'/>">Quản trị</a></c:if>
             <c:choose>
                 <c:when test="${not empty sessionScope.user}">
                     <a href="<c:url value='/profile'/>"><c:out value="${empty sessionScope.user.fullName ? sessionScope.user.username : sessionScope.user.fullName}"/></a>
                     <a href="<c:url value='/orders'/>">Đơn hàng</a>
-                    <form method="post" action="<c:url value='/logout'/>"><button type="submit">Đăng xuất</button></form>
+                    <a href="<c:url value='/wallet'/>">Ví</a>
+                    <a href="<c:url value='/services'/>">Gói dịch vụ</a>
+                    <form method="post" action="<c:url value='/logout'/>"><button type="submit">Đăng xuất</button><input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
                 </c:when>
                 <c:otherwise><a href="<c:url value='/login'/>">Đăng nhập</a><a href="<c:url value='/register'/>">Đăng ký</a></c:otherwise>
             </c:choose>

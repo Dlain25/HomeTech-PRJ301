@@ -62,8 +62,13 @@ public class CheckoutServlet extends HttpServlet {
         String address = value(request, "shippingAddress");
         String note = value(request, "note");
         String method = value(request, "paymentMethod");
+        String date=value(request,"desiredDeliveryDate"),slot=value(request,"deliverySlot");
+        java.time.LocalDate deliveryDate=null;
 
         Map<String, String> errors = new LinkedHashMap<>();
+        try { deliveryDate=util.DeliveryDateUtil.parse(date,slot,java.time.Clock.systemUTC()); }
+        catch (RuntimeException e) { errors.put("deliveryDate","Chọn ngày nhận từ ngày mai đến 14 ngày tới và khung giờ hợp lệ."); }
+        if ("BANK_TRANSFER".equals(method) && !util.FeatureConfig.bankReady()) errors.put("paymentMethod","Chuyển khoản chưa được cấu hình. Bạn có thể chọn COD.");
 
         String e1 = ValidationUtil.validateFullName(name);
         if (e1 != null) {
@@ -100,16 +105,16 @@ public class CheckoutServlet extends HttpServlet {
                         phone,
                         address,
                         note,
-                        method
+                        method, deliveryDate, slot
                 );
 
                 request.getSession().setAttribute(
                         "flashSuccess",
-                        "Đặt hàng thành công! Mã đơn hàng của bạn là #" + orderId
+                        "Đã tạo đơn, đang chờ duyệt. Mã đơn hàng #" + orderId
                 );
 
                 response.sendRedirect(
-                        request.getContextPath() + "/orders?id=" + orderId
+                        request.getContextPath() + ("BANK_TRANSFER".equals(method)?"/payment/qr?kind=order&id=":"/orders?id=") + orderId
                 );
                 return;
 
@@ -133,6 +138,8 @@ public class CheckoutServlet extends HttpServlet {
         request.setAttribute("shippingAddress", address);
         request.setAttribute("note", note);
         request.setAttribute("paymentMethod", method);
+        request.setAttribute("desiredDeliveryDate",date);
+        request.setAttribute("deliverySlot",slot);
 
         request.getRequestDispatcher(VIEW).forward(request, response);
     }
@@ -142,6 +149,11 @@ public class CheckoutServlet extends HttpServlet {
                              User user)
             throws ServletException, IOException {
 
+        java.time.LocalDate today=java.time.LocalDate.now(util.DeliveryDateUtil.ZONE);
+        request.setAttribute("minDeliveryDate",today.plusDays(1));
+        request.setAttribute("maxDeliveryDate",today.plusDays(14));
+        request.setAttribute("suggestedDates",java.util.List.of(today.plusDays(1),today.plusDays(3),today.plusDays(7)));
+        request.setAttribute("bankReady",util.FeatureConfig.bankReady());
         List<CartItem> items;
 
         try (CartDAO dao = new CartDAO()) {

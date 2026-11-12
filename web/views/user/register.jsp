@@ -138,7 +138,7 @@
 
         <button type="submit">Đăng ký</button>
 
-    </form>
+    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
 
     <div class="bottom">
         Đã có tài khoản?

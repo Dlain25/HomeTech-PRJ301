@@ -1,0 +1,6 @@
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="cp" value="${pageContext.request.contextPath}"/>
+<c:set var="labels" value="${{'PENDING':'Chờ xử lý','CONFIRMED':'Đã duyệt','SHIPPING':'Đang giao','DELIVERED':'Đã giao','CANCELLED':'Đã hủy','PAID':'Đã thu tiền','FAILED':'Không thành công','REFUNDED':'Đã hoàn tiền','REQUESTED':'Yêu cầu mới','APPROVED':'Đã duyệt','REJECTED':'Đã từ chối','RECEIVED':'Đã nhận hàng hoàn','ACTIVE':'Đã kích hoạt','COD':'Thu khi giao hàng','BANK_TRANSFER':'Chuyển khoản','AM':'Buổi sáng','PM':'Buổi chiều','ANY':'Cả ngày'}}"/>

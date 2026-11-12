@@ -73,9 +73,9 @@ public class ChangePasswordServlet extends HttpServlet {
             }
 
             if (errors.isEmpty()) {
-                if (dao.updatePassword(sessionUser.getUserId(), PasswordUtil.hash(newPw))) {
-                    request.getSession().setAttribute("flashSuccess", "Đổi mật khẩu thành công");
-                    response.sendRedirect(request.getContextPath() + "/profile");
+                if (dao.updatePassword(sessionUser.getUserId(), PasswordUtil.hash(newPw), u.getPasswordHash())) {
+                    request.getSession().invalidate();
+                    response.sendRedirect(request.getContextPath() + "/login?passwordChanged=1");
                     return;
                 }
                 errors.put("general", "Không thể đổi mật khẩu lúc này, vui lòng thử lại");

@@ -8,6 +8,16 @@ import java.util.List;
 
 public class Order {
 
+    private java.time.LocalDate desiredDeliveryDate;
+    private String deliverySlot;
+    private LocalDateTime deliveredAt;
+    public java.time.LocalDate getDesiredDeliveryDate() { return desiredDeliveryDate; }
+    public void setDesiredDeliveryDate(java.time.LocalDate d) { desiredDeliveryDate=d; }
+    public String getDeliverySlot() { return deliverySlot; }
+    public void setDeliverySlot(String s) { deliverySlot=s; }
+    public LocalDateTime getDeliveredAt() { return deliveredAt; }
+    public void setDeliveredAt(LocalDateTime t) { deliveredAt=t; }
+    public String getDeliverySlotText() { return "AM".equals(deliverySlot)?"Buổi sáng":"PM".equals(deliverySlot)?"Buổi chiều":"Cả ngày"; }
     private long orderId;
     private int userId;
     private String recipientName;
@@ -30,7 +40,7 @@ public class Order {
     }
 
     public boolean isCancellable() {
-        return "PENDING".equals(orderStatus);
+        return util.OrderRules.cancellable(orderStatus, paymentStatus);
     }
 
     public String getStatusText() {

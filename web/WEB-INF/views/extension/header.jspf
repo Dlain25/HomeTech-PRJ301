@@ -1,0 +1,10 @@
+<%@ page pageEncoding="UTF-8" %>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title><c:out value="${pageTitle}"/> · HomeTech</title><link rel="stylesheet" href="${cp}/assets/css/extensions.css"></head><body>
+<header class="ex-header"><a class="ex-brand" href="${cp}/home">Home<span>Tech</span></a><nav aria-label="Điều hướng"><a href="${cp}/products">Sản phẩm</a>
+<c:if test="${not empty sessionScope.user}"><a href="${cp}/orders">Đơn của tôi</a><a href="${cp}/wallet">Ví &amp; nạp tiền</a><a href="${cp}/services">Gói dịch vụ</a><a href="${cp}/returns">Hoàn hàng</a><a href="${cp}/profile">Tài khoản</a></c:if>
+<c:if test="${empty sessionScope.user}"><a href="${cp}/login">Đăng nhập</a></c:if></nav></header>
+<main class="ex-main"><c:if test="${sessionScope.user.admin}"><nav class="ex-admin" aria-label="Quản trị"><a href="${cp}/admin/dashboard">Tổng quan</a><a href="${cp}/admin/orders">Duyệt đơn &amp; thu tiền</a><a href="${cp}/admin/reports">Báo cáo &amp; tiến độ</a><a href="${cp}/admin/topups">Duyệt nạp ví</a><a href="${cp}/admin/services">Quản lý gói</a><a href="${cp}/admin/returns">Xử lý hoàn hàng</a></nav></c:if>
+<div class="ex-heading"><span class="ex-kicker">HOMETECH / <c:out value="${sessionScope.user.username}"/></span><h1><c:out value="${pageTitle}"/></h1></div>
+<c:if test="${not empty sessionScope.flashSuccess}"><div class="ex-notice success" role="status"><c:out value="${sessionScope.flashSuccess}"/></div><c:remove var="flashSuccess" scope="session"/></c:if>
+<c:if test="${not empty sessionScope.flashError}"><div class="ex-notice error" role="alert"><c:out value="${sessionScope.flashError}"/></div><c:remove var="flashError" scope="session"/></c:if>

@@ -27,7 +27,7 @@
                     <c:if test="${not empty publicCsrfParameter and not empty publicCsrfToken}"><input type="hidden" name="<c:out value='${publicCsrfParameter}'/>" value="<c:out value='${publicCsrfToken}'/>"></c:if>
                     <c:if test="${empty cartAddPath}"><p class="integration-note">Tính năng mua hàng sẽ sớm được mở. Bạn có thể tham khảo phiên bản, giá và tồn kho tại đây.</p></c:if>
                     <noscript><p class="integration-note">Bật JavaScript để xem giá và tồn kho khi đổi phiên bản. Thao tác mua hiện bị vô hiệu hóa.</p></noscript>
-                </form>
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"></form>
             </c:when><c:otherwise><div class="ht-notice ht-notice-muted ht-top-large">Sản phẩm chưa có phiên bản khả dụng.</div><button class="ht-button ht-button-muted" disabled>Chưa thể thêm vào giỏ hàng</button></c:otherwise></c:choose>
             <div class="warranty-note"><span aria-hidden="true">✓</span><div><strong>Bảo hành ${product.warrantyMonths} tháng</strong><small>Thông tin bảo hành theo sản phẩm</small></div></div>
         </section>

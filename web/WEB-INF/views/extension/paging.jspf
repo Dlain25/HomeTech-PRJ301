@@ -1,0 +1,2 @@
+<%@ page pageEncoding="UTF-8" %>
+<nav class="ex-pagination" aria-label="Phân trang"><c:if test="${pageNumber > 1}"><a href="?page=${pageNumber-1}&amp;day=${fn:escapeXml(day)}&amp;status=${fn:escapeXml(status)}">← Trang trước</a></c:if><span>Trang ${pageNumber} · tối đa 30 yêu cầu/trang</span><c:if test="${fn:length(rows)==30}"><a href="?page=${pageNumber+1}&amp;day=${fn:escapeXml(day)}&amp;status=${fn:escapeXml(status)}">Trang tiếp →</a></c:if></nav>

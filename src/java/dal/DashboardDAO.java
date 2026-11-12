@@ -47,8 +47,7 @@ public class DashboardDAO {
     // Doanh thu từ đơn hàng đã giao
     public BigDecimal getTotalRevenue() throws SQLException {
         String sql =
-            "SELECT COALESCE(SUM(total_amount), 0) "
-            + "FROM Orders WHERE order_status = 'DELIVERED'";
+            "SELECT COALESCE(SUM(gross_revenue-refunds), 0) FROM dbo.vw_HTRevenueEvents";
 
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -63,14 +62,9 @@ public class DashboardDAO {
     public List<Object[]> getMonthlyRevenue() throws SQLException {
         List<Object[]> list = new ArrayList<>();
 
-        String sql =
-            "SELECT MONTH(created_at) AS month_number, "
-            + "SUM(total_amount) AS revenue "
-            + "FROM Orders "
-            + "WHERE order_status = 'DELIVERED' "
-            + "AND YEAR(created_at) = YEAR(GETDATE()) "
-            + "GROUP BY MONTH(created_at) "
-            + "ORDER BY month_number";
+        String sql = "SELECT MONTH(business_date) AS month_number, SUM(gross_revenue-refunds) AS revenue "
+            + "FROM dbo.vw_HTRevenueEvents WHERE YEAR(business_date)=YEAR(DATEADD(HOUR,7,SYSUTCDATETIME())) "
+            + "GROUP BY MONTH(business_date) ORDER BY month_number";
 
         try (Connection con = DBContext.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -101,6 +95,8 @@ public class DashboardDAO {
             + "ON oi.variant_id = pv.variant_id "
             + "JOIN Products p ON pv.product_id = p.product_id "
             + "WHERE o.order_status = 'DELIVERED' "
+            + "AND EXISTS (SELECT 1 FROM Payments pmt WHERE pmt.order_id=o.order_id AND pmt.payment_status='PAID' AND pmt.amount>=o.total_amount) "
+            + "AND NOT EXISTS (SELECT 1 FROM ReturnRequests ret WHERE ret.order_id=o.order_id AND ret.status IN ('APPROVED','RECEIVED','REFUNDED')) "
             + "GROUP BY p.product_id, p.product_name "
             + "ORDER BY total_sold DESC";
 
